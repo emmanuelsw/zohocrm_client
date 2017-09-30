@@ -1,12 +1,20 @@
 import React, { Component } from 'react';
+import reqwest from 'reqwest';
 
 class Lead extends Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			value: '0'
+			leads: [],
+			lead_id: 0,
+			phone: 0,
+			lead_source: 0
 		};
+	}
+
+	componentDidMount() {
+
 	}
 
   render() {
@@ -70,6 +78,32 @@ class Lead extends Component {
 						</div>
 					</div>
 
+				</div>
+				<div className="row">
+					<div className="col-md-12">
+						<div className="well">
+							<table className="table table-bordered table-striped table-hover">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Company</th>
+										<th>Phone</th>
+										<th>Mobile</th>
+										<th>Lead Source</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Emmanuel Deossa</td>
+										<td>IQ Think</td>
+										<td>302-61-00</td>
+										<td>313-745-9096</td>
+										<td>Advertisement</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
 		);

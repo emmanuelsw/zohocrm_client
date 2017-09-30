@@ -20,3 +20,11 @@ legend {
   margin-bottom: 16px;
   border-top: 1px solid #dce4ec;
 }
+
+.table-bordered {
+  border: 1px solid #dce4ec;
+}
+
+.table-bordered>thead>tr>th, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>tbody>tr>td, .table-bordered>tfoot>tr>td {
+  border: 2px solid #DCE4EC !important;
+}
