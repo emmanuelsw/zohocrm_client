@@ -13,14 +13,14 @@ class Navigation extends Component {
 							<span className="icon-bar"></span>
 							<span className="icon-bar"></span>
 						</button>
-						<a className="navbar-brand" href="#">Zoho CRM Client</a>
+						<a className="navbar-brand" href="">Zoho CRM Client</a>
 					</div>
 
 					<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 						<ul className="nav navbar-nav navbar-right">
-							<li><a href="#">API Source Code</a></li>
-							<li><a href="#">Client Source Code</a></li>
-							<li><a href="#">Emmanuel Deossa</a></li>
+							<li><a href="https://github.com/emmanuelsw/zohocrm_api">API Source Code</a></li>
+							<li><a href="https://github.com/emmanuelsw/zohocrm_client">Client Source Code</a></li>
+							<li><a href="https://github.com/emmanuelsw">Emmanuel Deossa</a></li>
 						</ul>
 					</div>
 

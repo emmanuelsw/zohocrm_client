@@ -2,3 +2,21 @@ body {
   margin: 0;
   padding: 0;
 }
+
+.top-space {
+  margin-top: 100px;
+}
+
+legend {
+  margin-bottom: 0px;
+}
+
+.title-hr {
+  margin-top: 0px;
+  border-top: 1px solid #bdc3c7;
+}
+
+.body-hr {
+  margin-bottom: 16px;
+  border-top: 1px solid #dce4ec;
+}
