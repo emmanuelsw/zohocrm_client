@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
+import './easy-autocomplete.css';
+import './easy-autocomplete.js';
 import axios from 'axios';
 import { ToastContainer, ToastMessage } from 'react-toastr';
 const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 
 const url = 'http://localhost:3001/api'
 
-const options = {
+const alertOptions = {
 	timeOut: 5000,
 	extendedTimeOut: 1000, 
 	closeButton: true,
@@ -48,20 +50,18 @@ class Lead extends Component {
 		const errors = err.response.data.errors;
 		
 		if(typeof errors === 'string') {
-			this.container.error(errors, "", options);
+			this.container.error(errors, "", alertOptions);
 		} else {
 			let errorsResponse = [];
 			for(let key in errors) {
 				errorsResponse.push(<li key={key}>{errors[key]}</li>)
 			}
-			this.container.error(errorsResponse, "", options);
+			this.container.error(errorsResponse, "", alertOptions);
 		}
 
 	}
 
-	addByLeadID = (e) => {
-		e.preventDefault();
-
+	addByLeadID = () => {
 		axios.post(url + '/v1/leads', {
 			lead_id: this.state.lead_id
 		})
@@ -69,12 +69,41 @@ class Lead extends Component {
 			this.setState(prevState => ({
 				leads: [...prevState.leads, response.data.lead]
 			}))
-			this.container.success(response.data.lead.name + ' successfully added', "", options);
+			this.container.success(response.data.lead.name + ' successfully added', "", alertOptions);
 		})
 		.catch(err => this.handleError(err));
 	}
 
 	render() {
+
+		let self = this
+		let search_phone = $("#search_phone");
+
+		var options = {
+			getValue: "phone",
+			url: function(phrase) {
+				return url + "/v1/leads/search_by_phone?phone=" + phrase;
+			},
+			template: {
+				type: "description",
+				fields: {
+					description: "name"
+				}
+			},
+			list: {
+				onChooseEvent: function() {
+					var lead_id = search_phone.getSelectedItemData().lead_id
+					console.log(lead_id)
+					search_phone.val("")
+					self.setState({
+						lead_id: lead_id
+					})
+					self.addByLeadID()
+				}
+			}
+		}
+
+		search_phone.easyAutocomplete(options)
 
 		const leadRows = this.state.leads.map((lead, idx) => (
 			<tr key={idx}>
@@ -100,13 +129,13 @@ class Lead extends Component {
 							<legend>Add Lead</legend>
 							<hr className="title-hr"/>
 
-							<form method="post" onSubmit={this.addByLeadID}>
+							<form method="post">
 								<div className="form-group">
 									<label className="control-label" htmlFor="lead_id">Add by Lead ID</label>
 									<div className="input-group">
 										<input className="form-control" onChange={this.handleChange} name="lead_id" type="text"   placeholder="2800097000000135253"/>
 										<span className="input-group-btn">
-											<button type="submit" className="btn btn-default">Add!</button>
+											<button onClick={this.addByLeadID} type="button" className="btn btn-default">Add!</button>
 										</span>
 									</div>
 								</div>
@@ -117,7 +146,7 @@ class Lead extends Component {
 							<form action="" method="post">
 								<div className="form-group">
 									<label className="control-label" htmlFor="lead_id">Search by phone number</label>
-									<input onChange={this.handleChange} className="form-control" name="phone" type="text" placeholder="555-555-5555"/>
+									<input id="search_phone" className="form-control" name="phone" type="text" placeholder="555-555-5555"/>
 								</div>
 							</form>
 
