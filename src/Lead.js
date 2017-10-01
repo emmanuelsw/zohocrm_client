@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import $ from 'jquery';
 import axios from 'axios';
 import { ToastContainer, ToastMessage } from 'react-toastr';
 const ToastMessageFactory = React.createFactory(ToastMessage.animation);
@@ -30,7 +31,6 @@ class Lead extends Component {
 	componentDidMount() {
 		axios.get(url + '/v1/leads')
 		.then(response => {
-			console.log(response.data.leads);
 			this.setState({
 				leads: response.data.leads
 			})
@@ -66,7 +66,10 @@ class Lead extends Component {
 			lead_id: this.state.lead_id
 		})
 		.then(response => {
-			console.log(response);
+			this.setState(prevState => ({
+				leads: [...prevState.leads, response.data.lead]
+			}))
+			this.container.success(response.data.lead.name + ' successfully added', "", options);
 		})
 		.catch(err => this.handleError(err));
 	}
