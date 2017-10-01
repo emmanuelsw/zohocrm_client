@@ -3,6 +3,8 @@ import axios from 'axios';
 import { ToastContainer, ToastMessage } from 'react-toastr';
 const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 
+const url = 'http://localhost:3001/api'
+
 const options = {
 	timeOut: 5000,
 	extendedTimeOut: 1000, 
@@ -26,13 +28,20 @@ class Lead extends Component {
 	}
 
 	componentDidMount() {
-		
+		axios.get(url + '/v1/leads')
+		.then(response => {
+			console.log(response.data.leads);
+			this.setState({
+				leads: response.data.leads
+			})
+		})
+		.catch(err => this.handleError(err));
 	}
 
 	handleChange = (e) => {
-    let newState = {};
-    newState[e.target.name] = e.target.value;
-    this.setState(newState);
+		let newState = {};
+		newState[e.target.name] = e.target.value;
+		this.setState(newState);
 	}
 	
 	handleError = (err) => {
@@ -48,23 +57,33 @@ class Lead extends Component {
 			this.container.error(errorsResponse, "", options);
 		}
 
-  }
+	}
 
 	addByLeadID = (e) => {
 		e.preventDefault();
 
-		axios.post('http://localhost:3001/api/v1/leads', {
+		axios.post(url + '/v1/leads', {
 			lead_id: this.state.lead_id
 		})
 		.then(response => {
 			console.log(response);
 		})
 		.catch(err => this.handleError(err));
+	}
 
-  }
+	render() {
 
-  render() {
-    return(
+		const leadRows = this.state.leads.map((lead, idx) => (
+			<tr key={idx}>
+				<td>{lead.name}</td>
+				<td>{lead.company}</td>
+				<td>{lead.phone}</td>
+				<td>{lead.mobile}</td>
+				<td>{lead.lead_source}</td>
+			</tr>
+		));
+
+		return(
 			<div className="container top-space">
 				<ToastContainer ref={(input) => {this.container = input;}}
 					toastMessageFactory={ToastMessageFactory}
@@ -144,13 +163,7 @@ class Lead extends Component {
 									</tr>
 								</thead>
 								<tbody>
-									<tr>
-										<td>Emmanuel Deossa</td>
-										<td>IQ Think</td>
-										<td>302-61-00</td>
-										<td>313-745-9096</td>
-										<td>Advertisement</td>
-									</tr>
+									{leadRows}
 								</tbody>
 							</table>
 						</div>
@@ -158,7 +171,7 @@ class Lead extends Component {
 				</div>
 			</div>
 		);
-  }
+	}
 }
 
 export default Lead;
