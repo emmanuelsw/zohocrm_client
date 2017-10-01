@@ -1,17 +1,8 @@
+/* eslint-disable */
+
 import $ from 'jquery';
 import jQuery from 'jquery';
-/*
- * easy-autocomplete
- * jQuery plugin for autocompletion
- * 
- * @author Łukasz Pawełczak (http://github.com/pawelczak)
- * @version 1.3.5
- * Copyright  License: 
- */
 
-/*
- * EasyAutocomplete - Configuration 
- */
 var EasyAutocomplete = (function(scope){
 
 	scope.Configuration = function Configuration(options) {

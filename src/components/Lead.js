@@ -1,34 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import $ from 'jquery';
-import './easy-autocomplete.css';
-import './easy-autocomplete.js';
+import { Base, url, alertOptions } from './Base';
 import axios from 'axios';
 import { ToastContainer, ToastMessage } from 'react-toastr';
 const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 
-const url = 'http://localhost:3001/api'
-
-const alertOptions = {
-	timeOut: 5000,
-	extendedTimeOut: 1000, 
-	closeButton: true,
-	showAnimation: 'animated fadeInRight', 
-	hideAnimation: 'animated fadeOutRight',
-	escapeHtml: false
-}
-
-class Lead extends Component {
-
-	constructor(props) {
-		super(props);
-		this.state = {
-			leads: [],
-			lead_id: '',
-			phone: '',
-			lead_source: 0,
-			search: ''
-		};
-	}
+class Lead extends Base {
 
 	componentDidMount() {
 		axios.get(url + '/v1/leads')
@@ -40,25 +17,21 @@ class Lead extends Component {
 		.catch(err => this.handleError(err));
 	}
 
-	handleChange = (e) => {
-		let newState = {};
-		newState[e.target.name] = e.target.value;
-		this.setState(newState);
-	}
-	
 	handleError = (err) => {
-		const errors = err.response.data.errors;
-		
-		if(typeof errors === 'string') {
-			this.container.error(errors, "", alertOptions);
-		} else {
-			let errorsResponse = [];
-			for(let key in errors) {
-				errorsResponse.push(<li key={key}>{errors[key]}</li>)
+		if(err.response) {
+			const errors = err.response.data.errors;
+			if(typeof errors === 'string') {
+				this.container.error(errors, "", alertOptions);
+			} else {
+				let errorsResponse = [];
+				for(let key in errors) {
+					errorsResponse.push(<li key={key}>{errors[key]}</li>)
+				}
+				this.container.error(errorsResponse, "", alertOptions);
 			}
-			this.container.error(errorsResponse, "", alertOptions);
+		} else {
+			this.container.error("Could not connect to API", "", alertOptions);
 		}
-
 	}
 
 	addByLeadID = () => {
@@ -69,14 +42,45 @@ class Lead extends Component {
 			this.setState(prevState => ({
 				leads: [...prevState.leads, response.data.lead]
 			}))
+			this.setState({lead_id: ''})
+			this.inputLeadID.value = "";
 			this.container.success(response.data.lead.name + ' successfully added', "", alertOptions);
 		})
 		.catch(err => this.handleError(err));
 	}
 
+	searchGlobal = (e) => {
+		axios.get(url + '/v1/leads/search', {
+			params: {
+				q: e.target.value
+			}
+		})
+		.then(response => {
+			this.setState({
+				leads: response.data
+			})
+		})
+		.catch(err => this.handleError(err));
+	}
+
+	searchLeadSource = (e) => {
+		axios.get(url + '/v1/leads/search_by_leadsource', {
+			params: {
+				q: e.target.value
+			}
+		})
+		.then(response => {
+			this.setState({
+				leads: response.data
+			})
+		})
+		.catch(err => this.handleError(err));
+	}
+
+
 	render() {
 
-		let self = this
+		let self = this;
 		let search_phone = $("#search_phone");
 
 		var options = {
@@ -95,15 +99,13 @@ class Lead extends Component {
 					var lead_id = search_phone.getSelectedItemData().lead_id
 					console.log(lead_id)
 					search_phone.val("")
-					self.setState({
-						lead_id: lead_id
-					})
+					self.setState({lead_id: lead_id})
 					self.addByLeadID()
 				}
 			}
 		}
 
-		search_phone.easyAutocomplete(options)
+		search_phone.easyAutocomplete(options);
 
 		const leadRows = this.state.leads.map((lead, idx) => (
 			<tr key={idx}>
@@ -133,7 +135,7 @@ class Lead extends Component {
 								<div className="form-group">
 									<label className="control-label" htmlFor="lead_id">Add by Lead ID</label>
 									<div className="input-group">
-										<input className="form-control" onChange={this.handleChange} name="lead_id" type="text"   placeholder="2800097000000135253"/>
+										<input ref={el => this.inputLeadID = el} className="form-control" onChange={this.handleChange} name="lead_id" type="text"   placeholder="2800097000000135253"/>
 										<span className="input-group-btn">
 											<button onClick={this.addByLeadID} type="button" className="btn btn-default">Add!</button>
 										</span>
@@ -160,21 +162,15 @@ class Lead extends Component {
 								<hr className="title-hr"/>
 								<div className="form-group">
 									<label className="control-label" htmlFor="lead_id">Search</label>
-									<input onChange={this.handleChange} className="form-control" name="search" type="text" placeholder="Person Name, Phone, or Company..."/>
+									<input onChange={this.searchGlobal} className="form-control" name="search" type="text" placeholder="Person Name, Phone, or Company..."/>
 								</div>
 
 								<hr className="body-hr"/>
 
 								<div className="form-group">
 									<label className="control-label" htmlFor="lead_id">Filter by Lead Source</label>
-									<select value={this.state.lead_source} className="form-control" name="lead_source" onChange={this.handleChange}>
-										<option disabled value="0">Select an option</option>
-										<option value="1">1</option>
-										<option value="2">2</option>
-										<option value="3">3</option>
-										<option value="4">4</option>
-										<option value="5">5</option>
-									</select>
+									<input onChange={this.searchLeadSource} className="form-control" name="lead_source" type="text" placeholder="Lead Source..."/>
+
 								</div>
 							</form>
 						</div>
