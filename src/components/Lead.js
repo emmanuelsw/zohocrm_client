@@ -15,9 +15,7 @@ class Lead extends Base {
 		cable.subscriptions.create({channel: 'LeadChannel'}, {
 			received: (data) => {
 				if (data.action === "new lead") {
-					this.setState(prevState => ({
-						leads: [data.message, ...prevState.leads]
-					}))
+					this.setState(prevState => ({leads: [data.message, ...prevState.leads]}))
 				}
 			}
 		});
@@ -59,9 +57,6 @@ class Lead extends Base {
 			lead_id: this.state.lead_id
 		})
 		.then(response => {
-			this.setState(prevState => ({
-				leads: [response.data.lead, ...prevState.leads]
-			}))
 			this.setState({lead_id: ''})
 			this.inputLeadID.value = "";
 			this.successAlert(response.data.lead.name + ' successfully added');
