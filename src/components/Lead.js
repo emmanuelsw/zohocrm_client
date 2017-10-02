@@ -49,7 +49,7 @@ class Lead extends Base {
 		})
 		.then(response => {
 			this.setState(prevState => ({
-				leads: [...prevState.leads, response.data.lead]
+				leads: [response.data.lead, ...prevState.leads]
 			}))
 			this.setState({lead_id: ''})
 			this.inputLeadID.value = "";
