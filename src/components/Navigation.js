@@ -18,9 +18,9 @@ class Navigation extends Component {
 
 					<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 						<ul className="nav navbar-nav navbar-right">
-							<li><a href="https://github.com/emmanuelsw/zohocrm_api">API Source Code</a></li>
-							<li><a href="https://github.com/emmanuelsw/zohocrm_client">Client Source Code</a></li>
-							<li><a href="https://github.com/emmanuelsw">Emmanuel Deossa</a></li>
+							<li><a rel="noopener noreferrer" target="_blank" href="https://github.com/emmanuelsw/zohocrm_api">API Source Code</a></li>
+							<li><a rel="noopener noreferrer" target="_blank" href="https://github.com/emmanuelsw/zohocrm_client">Client Source Code</a></li>
+							<li><a rel="noopener noreferrer" target="_blank" href="https://github.com/emmanuelsw">Emmanuel Deossa</a></li>
 						</ul>
 					</div>
 

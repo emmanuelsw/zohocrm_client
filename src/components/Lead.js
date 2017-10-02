@@ -4,12 +4,23 @@ import axios from 'axios';
 import { Base, url } from './Base';
 import Pagination from 'react-js-pagination';
 import { ToastContainer, ToastMessage } from 'react-toastr';
+import ActionCable from 'actioncable';
 const Toast = React.createFactory(ToastMessage.animation);
+const cable = ActionCable.createConsumer('ws://localhost:3001/api/v1/cable');
 
 class Lead extends Base {
 
-	componentDidMount() {
+	componentDidMount = () => {
 		this.fetchLeads();
+		cable.subscriptions.create({channel: 'LeadChannel'}, {
+			received: (data) => {
+				if (data.action === "new lead") {
+					this.setState(prevState => ({
+						leads: [data.message, ...prevState.leads]
+					}))
+				}
+			}
+		});
 	}
 
 	handlePageChange = (page) => {
@@ -207,7 +218,7 @@ class Lead extends Base {
 						<div className="well">
 							<table className="table table-bordered table-striped table-hover">
 								<thead>
-									<tr>
+									<tr className="info">
 										<th>Name</th>
 										<th>Company</th>
 										<th>Phone</th>
@@ -219,7 +230,10 @@ class Lead extends Base {
 									{leadRows}
 								</tbody>
 							</table>
-							<div className="pagination-content">
+							<a className="btn btn-primary total-count">Records &nbsp;
+								<span className="badge">{this.state.total_count}</span>
+							</a>
+							<div className="pagination-content pull-right">
 								<Pagination
 									activePage={this.state.current_page}
 									itemsCountPerPage={this.state.per_page}
