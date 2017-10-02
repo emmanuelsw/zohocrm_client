@@ -22,7 +22,8 @@ export class Base extends React.Component {
 			total_count: 1,
 			per_page: 10,
 			lead_id: '',
-			leads: []
+			leads: [],
+			search: ''
 		};
 	}
 	
@@ -30,6 +31,39 @@ export class Base extends React.Component {
 		let newState = {};
 		newState[e.target.name] = e.target.value;
 		this.setState(newState);
+	}
+
+	handleError = (err) => {
+		if(err.response) {
+			const errors = err.response.data.errors;
+			if(typeof errors === 'string') {
+				this.errorAlert(errors);
+			} else {
+				let errorsResponse = [];
+				for(let key in errors) {
+					errorsResponse.push(<li key={key}>{errors[key]}</li>)
+				}
+				this.errorAlert(errorsResponse);
+			}
+		} else {
+			this.errorAlert("Could not connect to API");
+		}
+	}
+
+	errorAlert = (msg) => {
+		this.container.error(msg, "", alertOptions);
+	}
+
+	successAlert = (msg) => {
+		this.container.success(msg, "", alertOptions);
+	}
+
+	clearLeadSource = (e) => {
+		this.setState({lead_source: ''});
+	}
+
+	clearSearch = (e) => {
+		this.setState({search: ''});
 	}
 
 }

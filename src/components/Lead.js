@@ -1,10 +1,10 @@
 import React from 'react';
 import $ from 'jquery';
-import { Base, url, alertOptions } from './Base';
 import axios from 'axios';
+import { Base, url } from './Base';
 import Pagination from 'react-js-pagination';
 import { ToastContainer, ToastMessage } from 'react-toastr';
-const ToastMessageFactory = React.createFactory(ToastMessage.animation);
+const Toast = React.createFactory(ToastMessage.animation);
 
 class Lead extends Base {
 
@@ -12,6 +12,19 @@ class Lead extends Base {
 		this.fetchLeads();
 	}
 
+	handlePageChange = (page) => {
+    this.setState({current_page: page}, () => {
+			if (this.state.search) {
+				this.searchGlobal();
+			} else if(this.state.lead_source) {
+				this.searchLeadSource();
+			} else {
+				this.fetchLeads();
+			}
+		});
+	}
+
+	// Get all leads
 	fetchLeads = () => {
 		axios.get(url + '/v1/leads', {
 			params: {
@@ -28,30 +41,8 @@ class Lead extends Base {
 		})
 		.catch(err => this.handleError(err));
 	}
-
-	handleError = (err) => {
-		if(err.response) {
-			const errors = err.response.data.errors;
-			if(typeof errors === 'string') {
-				this.container.error(errors, "", alertOptions);
-			} else {
-				let errorsResponse = [];
-				for(let key in errors) {
-					errorsResponse.push(<li key={key}>{errors[key]}</li>)
-				}
-				this.container.error(errorsResponse, "", alertOptions);
-			}
-		} else {
-			this.container.error("Could not connect to API", "", alertOptions);
-		}
-	}
-
-  handlePageChange = (page) => {
-    this.setState({current_page: page}, () => {
-			this.fetchLeads();
-		});
-  }
-
+	
+	// Add record by Lead ID
 	addByLeadID = () => {
 		axios.post(url + '/v1/leads', {
 			lead_id: this.state.lead_id
@@ -62,37 +53,53 @@ class Lead extends Base {
 			}))
 			this.setState({lead_id: ''})
 			this.inputLeadID.value = "";
-			this.container.success(response.data.lead.name + ' successfully added', "", alertOptions);
+			this.successAlert(response.data.lead.name + ' successfully added');
 		})
 		.catch(err => this.handleError(err));
 	}
 
+	// Search by name, phone or company
 	searchGlobal = (e) => {
-		axios.get(url + '/v1/leads/search', {
-			params: {
-				q: e.target.value
-			}
-		})
-		.then(response => {
-			this.setState({
-				leads: response.data
+		let value = ((e) ? e.target.value : this.state.search)
+    this.setState({search: value}, () => {
+			axios.get(url + '/v1/leads/search', {
+				params: {
+					q: this.state.search,
+					page: this.state.current_page,
+					size: this.state.per_page
+				}
 			})
-		})
-		.catch(err => this.handleError(err));
+			.then(response => {
+				this.setState({
+					leads: response.data.leads,
+					current_page: response.data.meta.current_page,
+					total_count: response.data.meta.total_count
+				})
+			})
+			.catch(err => this.handleError(err));
+		});
 	}
 
+	// Search by lead source
 	searchLeadSource = (e) => {
-		axios.get(url + '/v1/leads/search_by_leadsource', {
-			params: {
-				q: e.target.value
-			}
-		})
-		.then(response => {
-			this.setState({
-				leads: response.data
+		let value = ((e) ? e.target.value : this.state.lead_source)
+		this.setState({lead_source: value}, () => {
+			axios.get(url + '/v1/leads/search_leadsource', {
+				params: {
+					q: this.state.lead_source,
+					page: this.state.current_page,
+					size: this.state.per_page
+				}
 			})
-		})
-		.catch(err => this.handleError(err));
+			.then(response => {
+				this.setState({
+					leads: response.data.leads,
+					current_page: response.data.meta.current_page,
+					total_count: response.data.meta.total_count
+				})
+			})
+			.catch(err => this.handleError(err));
+		});
 	}
 
 
@@ -104,7 +111,7 @@ class Lead extends Base {
 		var options = {
 			getValue: "phone",
 			url: function(phrase) {
-				return url + "/v1/leads/search_by_phone?phone=" + phrase;
+				return url + "/v1/leads/search_phone?phone=" + phrase;
 			},
 			template: {
 				type: "description",
@@ -138,7 +145,7 @@ class Lead extends Base {
 		return(
 			<div className="container top-space">
 				<ToastContainer ref={(input) => {this.container = input;}}
-					toastMessageFactory={ToastMessageFactory}
+					toastMessageFactory={Toast}
 					className="toast-top-right"
 					preventDuplicates={false}
 				/>
@@ -180,14 +187,14 @@ class Lead extends Base {
 								<hr className="title-hr"/>
 								<div className="form-group">
 									<label className="control-label" htmlFor="lead_id">Search</label>
-									<input onChange={this.searchGlobal} className="form-control" name="search" type="text" placeholder="Person Name, Phone, or Company..."/>
+									<input onFocus={this.clearLeadSource} onChange={this.searchGlobal} className="form-control" name="search" type="text" placeholder="Person Name, Phone, or Company..."/>
 								</div>
 
 								<hr className="body-hr"/>
 
 								<div className="form-group">
 									<label className="control-label" htmlFor="lead_id">Filter by Lead Source</label>
-									<input onChange={this.searchLeadSource} className="form-control" name="lead_source" type="text" placeholder="Lead Source..."/>
+									<input onFocus={this.clearSearch} onChange={this.searchLeadSource} className="form-control" name="lead_source" type="text" placeholder="Lead Source..."/>
 
 								</div>
 							</form>
