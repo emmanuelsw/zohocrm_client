@@ -16,7 +16,7 @@
 git clone https://github.com/emmanuelsw/zohocrm_client.git
 cd zohocrm_client
 yarn install # install dependencies
-yarn start
+yarn start # start server in port 3000
 visit your browser in http://localhost:3000
 ~~~
 
