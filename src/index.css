@@ -42,3 +42,11 @@ legend {
 .toast-top-right {
   top: 71px;
 }
+
+ul.pagination {
+  margin: 0px 0px;
+}
+
+.pagination-content {
+  text-align: right;
+}

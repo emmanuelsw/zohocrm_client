@@ -2,16 +2,28 @@ import React from 'react';
 import $ from 'jquery';
 import { Base, url, alertOptions } from './Base';
 import axios from 'axios';
+import Pagination from 'react-js-pagination';
 import { ToastContainer, ToastMessage } from 'react-toastr';
 const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 
 class Lead extends Base {
 
 	componentDidMount() {
-		axios.get(url + '/v1/leads')
+		this.fetchLeads();
+	}
+
+	fetchLeads = () => {
+		axios.get(url + '/v1/leads', {
+			params: {
+				page: this.state.current_page,
+				size: this.state.per_page
+			}
+		})
 		.then(response => {
 			this.setState({
-				leads: response.data.leads
+				leads: response.data.leads,
+				current_page: response.data.meta.current_page,
+				total_count: response.data.meta.total_count
 			})
 		})
 		.catch(err => this.handleError(err));
@@ -33,6 +45,12 @@ class Lead extends Base {
 			this.container.error("Could not connect to API", "", alertOptions);
 		}
 	}
+
+  handlePageChange = (page) => {
+    this.setState({current_page: page}, () => {
+			this.fetchLeads();
+		});
+  }
 
 	addByLeadID = () => {
 		axios.post(url + '/v1/leads', {
@@ -194,6 +212,15 @@ class Lead extends Base {
 									{leadRows}
 								</tbody>
 							</table>
+							<div className="pagination-content">
+								<Pagination
+									activePage={this.state.current_page}
+									itemsCountPerPage={this.state.per_page}
+									totalItemsCount={this.state.total_count}
+									pageRangeDisplayed={5}
+									onChange={this.handlePageChange}
+								/>
+							</div>
 						</div>
 					</div>
 				</div>

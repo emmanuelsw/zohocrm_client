@@ -18,6 +18,9 @@ export class Base extends React.Component {
 
 		this.state = {
 			lead_source: '',
+			current_page: 1,
+			total_count: 1,
+			per_page: 10,
 			lead_id: '',
 			leads: []
 		};
