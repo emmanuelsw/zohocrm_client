@@ -22,3 +22,6 @@ visit your browser in http://localhost:3000
 
 ## Notes
 * To test the creation in real time open a new window of your browser or another browser and add a new lead.
+
+## Screenshot
+![Screenshot](https://raw.githubusercontent.com/emmanuelsw/zohocrm_client/master/screenshot.png)
