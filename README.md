@@ -21,6 +21,17 @@ visit your browser in http://localhost:3000
 ~~~
 
 ## Notes
+* Data from Zoho CRM API for testing:
+  * Lead ID: 
+    * 2800097000000131607
+    * 2800097000000135245
+    * 2800097000000135246
+    * 2800097000000135251
+  * Phone:
+    * 3206379980
+    * 9617846824
+    * 3219879600
+    * 3206585412
 * To test the creation in real time open a new window of your browser or another browser and add a new lead.
 
 ## Screenshot
